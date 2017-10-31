@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        /*this style is only for this example*/
+        html, body, body div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, abbr, address, cite, code, del, dfn, em, img, ins, kbd, q, samp, small, strong, sub, sup, var, b, i, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, figure, footer, header, menu, nav, section, time, mark, audio, video, details, summary {
+            -webkit-margin-before: 0px;-webkit-margin-after: 0px;-webkit-margin-start: 0px;-webkit-margin-end: 0px;margin: 0;padding: 0;border: 0;-webkit-box-sizing: border-box;-moz-box-sizing: border-box;box-sizing: border-box; vertical-align: top;background: 0 0;  }
+        *:before, *:after {-webkit-box-sizing: border-box;-moz-box-sizing: border-box;box-sizing: border-box;}
+        html{display:block;height:100%;}
+        body{display:block;height:100%;min-width:1200px;overflow:hidden;font-family:Microsoft YaHei,Tahoma,simsun;position:relative;z-index: 0;font-size:14px;min-width:1200px;background-color:#F1F1F1;}
+        input,textarea{background:none;outline: none;box-sizing: border-box;}
+        textarea{border:1px solid #BBBBBB;}
+        input[type='text'],input[type='number'],input[type='password']{border-width:0 0 1px 0;border-style: solid;border-color: #BBBBBB;}
+        input[type='text']:focus,input[type='number']:focus,input[type='password']:focus,textarea:focus{border-color: #000000;}
+        #nav{display: block;width: 100%;position: relative;overflow:visible;z-index: 100;height: 60px;padding:10px;background-color: rgba(255, 255, 255, 0.95);box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.15);}
+        #fruit-now{font-size: 18px;font-weight: bold;}
+        #fruit-now-edit-input{display:none;font-size: 18px;font-weight: bold;position:absolute;padding: 0 2em 0 1.4em;left:0;top:0;z-index:2;width:100%;height:100%;background-color:#fff;}
+        #fruit-now:hover,#fruit-now-edit-input:hover,#fruit-now-edit-input:focus{border-bottom:2px solid #000;}
+        #fruit-top{box-shadow: 0 0 5px #aaa;width:100%;padding:12px;border-width:1px 1px 0 1px;border-style:solid;border-color:#ccc;}
+        #fruit-top>input{width:100%;border:1px solid #ddd;padding-left:10px;height:36px;}
+        .block{display:block !important;}
+        .hidden{display:none !important;}
+    </style>
+    <!--For IE,this example need polyfill.js but dropdown.js does NOT-->
+    <script type="text/javascript" src="polyfill.js"></script>
+</head>
+<body>
+    <div id="nav">
+        <!--begin-->
+        <div class="dropdown" id="dropdown-fruit">
+            <p class="dropdown-now-box">
+                <span class="dropdown-now" id="fruit-now"></span>
+                <i></i>
+            </p>
+            <ul class="dropdown-menu" id="list-fruit"></ul>
+        </div>
+        <!--end-->
+    </div>
+</body>
+<link rel="stylesheet" href="dropdown.css" />
+<script type="text/javascript" src="jquery.1.8.3.min.js"></script>
+<script type="text/javascript" src="dropdown.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        /**
+         * $('#xxx').dropdown({
+         *     list:,                     //array      necessary
+         *     id:,                       //string     necessary ①
+         *     text:,                     //string     necessary
+         *     edit:{xml:,callback:}      //object     not necessary
+         *     callback:                  //function   not necessary
+         *     auto:                      //function   not necessary
+         * })
+         *
+         */
+        //list
+        var list = [
+            {_id:'1001',_name:'apple'},
+            {_id:'1002',_name:'banana'},
+            {_id:'1003',_name:'pear'},
+            {_id:'1004',_name:'grape'},
+            {_id:'1005',_name:'plum'},
+            {_id:'1006',_name:'orange'}
+        ];
+        //call dropdown
+        $('#dropdown-fruit').dropdown({
+            list:list,
+            id:'_id',
+            text:'_name',
+            edit:{
+                xml:'<input id="fruit-now-edit-input" type="text" value="" placeholder="update this fruit\'s name" />',
+                callback:function($xml){
+                    $xml.val($('#fruit-now').text());
+                    $xml.focus();
+                    $xml.off('input').on('input',function(){
+                        if($xml.val()!=''){
+                            $xml.css('min-width',0);
+                        }
+                        else{
+                            $xml.css('min-width',280);
+                        }
+                    });
+                    $xml.off('blur').on('blur',function(){
+                        var index = list.findIndex(function(v,k,list){
+                            return v._id == $('#fruit-now').data('id');
+                        });
+                        list[index]._name = $xml.val();
+                        $('#fruit-now').text(list[index]._name);
+                        $xml.removeClass('block');
+                    });
+                }
+            },
+            top:{
+                xml:'<div id="fruit-top"><input type="text" value="" placeholder="search by keyword" /></div>',
+                callback:function($xml){
+                    //search list by keyword
+                    $xml.children('input').eq(0).off().on('input',function(){
+                        var keyword = $.trim($(this).val());
+                        var exp = new RegExp('.*'+keyword+'.*');
+                        $('#list-fruit li').each(function(){
+                            if(exp.test($(this).text())){
+                                $(this).removeClass('hidden');
+                            }
+                            else{
+                                $(this).addClass('hidden');
+                            }
+                        });
+                    });
+                }
+            },
+            callback:function(){
+                var _id = ''+$(this).data('id');
+                $('#fruit-now').data('id',_id).text($(this).text());
+                $('#dropdown-fruit').removeClass('active');
+            },
+            auto:function(){
+                if(list.length){
+                    var _id = list[0]._id,
+                        _name = list[0]._name;
+                    $('#fruit-now').data('id',_id).text(_name);
+                }
+                else{
+                    console.log('no fruit');
+                }
+            }
+        });
+    });
+</script>
+</html>

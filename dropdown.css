@@ -1,0 +1,14 @@
+/*you can update style by your self*/
+.dropdown *{box-sizing: border-box;}
+.dropdown{position: absolute;background-color: #FFFFFF;text-align:left;line-height: 2.6em;border-radius: 4px;margin: 0px 4px 0px 0px;display: inline-block;cursor:pointer;overflow: visible;z-index: 999;box-sizing: border-box;}
+.dropdown>a{position:relative;display:block;width:100%;height:2.6em;background-color: transparent;z-index:1;}
+.dropdown-now-box{position:relative;height:2.6em;}
+.dropdown-now{display:inline-block;width:100%;height:100%;}
+.dropdown-top{position:relative;display:none;border:1px solid #ccc;background-color: #FFFFFF;padding:0;overflow:hidden;}
+.dropdown-menu{text-align:left;position:relative;display:none;background-color: #FFFFFF;border:1px solid #ccc;max-height:400px;padding:0;overflow-y:auto;margin-top:-1px;}
+.dropdown-menu li{position:relative;padding:0 1.4em 0 1.4em;}
+.dropdown-menu li:hover{color:#000;background-color:#d1d1d1;}
+.dropdown-bottom{position:relative;display:none;border:1px solid #ccc;background-color: #FFFFFF;padding:0;overflow:hidden;margin-top:-1px;}
+.dropdown.active>.dropdown-menu,.dropdown.active>.dropdown-top,.dropdown.active>.dropdown-bottom{display:block;}
+.dropdown-now{padding:0 2em 0 1.4em;}
+.dropdown-now-box>i{position: absolute;display: inline-block;width: 20px;height: 100%;top: 0;right: 0;background: url('images/1.png') center no-repeat;z-index: 1;}
